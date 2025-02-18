@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
         return -1;
     }
 
-    //用户登出???
+    //用户登出
     @Override
     public boolean logout(long id) {
         return false;

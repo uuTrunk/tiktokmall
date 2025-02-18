@@ -7,9 +7,12 @@ import com.uutrunk.payment.entity.CreditCardInfo;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author uuTrunk
+ */
 @RestController
 public class CheckoutController {
-    private CheckoutService checkoutService;
+    private final CheckoutService checkoutService;
     public CheckoutController(CheckoutService checkoutService) {
         this.checkoutService = checkoutService;
     }
@@ -21,7 +24,10 @@ public class CheckoutController {
         String lastname = checkoutReq.getLastname();
         String email = checkoutReq.getEmail();
         CreditCardInfo creditCard = checkoutReq.getCreditCard();
-        return checkoutService.checkout(userId, firstname, lastname, email, checkoutReq.getAddress(), creditCard);
+        String transactionId = checkoutService.checkout(userId, firstname, lastname, email, checkoutReq.getAddress(), creditCard);
+        CheckoutResp resp = new CheckoutResp();
+        resp.setTransactionId(transactionId);
+        return resp;
     }
 
 }
