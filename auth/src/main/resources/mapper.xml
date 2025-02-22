@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dyds.auth.mapper.UserMapper">
+
+    <!-- 用户表映射结果 -->
+    <resultMap id="UserResultMap" type="User">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="password_hash" property="passwordHash" jdbcType="VARCHAR"/>
+        <result column="status" property="status"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"
+                javaType="com.dyds.auth.enums.UserStatus"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 基础字段列表 -->
+    <sql id="Base_Column_List">
+        id, username, password_hash, status, create_time, update_time
+    </sql>
+
+    <!-- 根据ID查询用户 -->
+    <select id="selectById" resultMap="UserResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据用户名查询用户 -->
+    <select id="selectByUsername" resultMap="UserResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE username = #{username}
+    </select>
+
+    <!-- 更新用户状态 -->
+    <update id="updateStatus">
+        UPDATE sys_user
+        SET status = #{status},
+            update_time = NOW()
+        WHERE id = #{userId}
+    </update>
+
+    <!-- 动态条件查询用户 -->
+    <select id="selectByCondition" resultMap="UserResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_user
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startTime != null">
+                AND create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND create_time <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <!-- 批量插入用户（示例） -->
+    <insert id="batchInsert" parameterType="list">
+        INSERT INTO sys_user
+        (username, password_hash, status)
+        VALUES
+        <foreach collection="list" item="user" separator=",">
+            (
+            #{user.username},
+            #{user.passwordHash},
+            #{user.status, typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 令牌相关操作 -->
+    <update id="updateLastLoginTime">
+        UPDATE sys_user
+        SET last_login_time = NOW()
+        WHERE id = #{userId}
+    </update>
+
+    <!-- 封禁用户 -->
+    <update id="banUser">
+        UPDATE sys_user
+        SET status = 'BANNED',
+            ban_reason = #{reason},
+            update_time = NOW()
+        WHERE id = #{userId}
+    </update>
+
+</mapper>
