@@ -1,0 +1,69 @@
+server:
+  port: 18080
+
+# ?????
+thread:
+  pool:
+    executor:
+      config:
+        core-pool-size: 20
+        max-pool-size: 50
+        keep-alive-time: 5000
+        block-queue-size: 5000
+        policy: CallerRunsPolicy
+
+
+spring:
+  application:
+    name: spring-AI-Alibaba-learn
+
+  ai:
+    dashscope.api-key: sk-a0bf9bfdf45242678d5169944ba6534d
+
+  datasource:
+    username: root
+    password: 78790209
+    url: jdbc:mysql://127.0.0.1:13307/dyds?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: Retail_HikariCP
+      minimum-idle: 15 #????????
+      idle-timeout: 180000 #?????????????600000?10???
+      maximum-pool-size: 25 #????????????10
+      auto-commit: true  #?????????????????????,????true
+      max-lifetime: 1800000 #??????????????????0???????????1800000?30??
+      connection-timeout: 30000 #?????????,??30???30000
+      connection-test-query: SELECT 1
+    type: com.zaxxer.hikari.HikariDataSource
+
+mybatis:
+  mapper-locations: classpath:/mybatis/mapper/*.xml
+  config-location: classpath:/mybatis/config/mybatis-config.xml
+
+# Redis
+redis:
+  sdk:
+    config:
+      host: 127.0.0.1
+      port: 16379
+      pool-size: 10
+      min-idle-size: 5
+      idle-timeout: 30000
+      connect-timeout: 5000
+      retry-attempts: 3
+      retry-interval: 1000
+      ping-interval: 60000
+      keep-alive: true
+
+# ??
+logging:
+  level:
+    root: info
+  config: classpath:logback-spring.xml
+
+
+
+
+
+
+
